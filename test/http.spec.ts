@@ -4,7 +4,7 @@ import * as mocha from 'mocha';
 
 import { Http, JSONResponse } from "../src/core/http";
 import { ResourceDescriptor, ResourceDescriptorCollection, ResourceSynopsis } from "../src/model/resource-descriptor";
-import { APIConfig } from "../src/core/api-interface";
+import { APIConfig } from "../src/model/api-config";
 const assert = chai.assert;
 
 let http: Http

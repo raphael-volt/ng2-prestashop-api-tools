@@ -1,13 +1,13 @@
 import * as commander from 'commander';
-
-import { APIInterface, APIConfig } from "./core/api-interface";
-// type Command = commander.Command
+import { JSONResponse } from "./core/http";
+import { APIConfig } from "./model/api-config";
+import { ConnectionfForm } from "./core/connectionf-form";
+import { ResourceDescriptorCollection } from "./model/resource-descriptor";
 export class App {
 
     private commander: commander.CommanderStatic;
     private package: any
-    private apiConfig: APIConfig
-
+    private resourceDescriptors: ResourceDescriptorCollection
     constructor() {
         this.commander = commander;
         this.package = require('../../package.json');
@@ -32,11 +32,10 @@ export class App {
             process.exit(1)
         }
 
-        let apiInterface: APIInterface = new APIInterface()
+        let form: ConnectionfForm = new ConnectionfForm()
         
-        apiInterface.configuration().subscribe((config: APIConfig) => {
-            this.apiConfig = config
-            console.log("apiConfig", config)
+        form.init().subscribe((response: JSONResponse) => {
+            this.resourceDescriptors = <ResourceDescriptorCollection>response.json
             process.exit(0)
         })
     }

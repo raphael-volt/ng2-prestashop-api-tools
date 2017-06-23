@@ -1,5 +1,5 @@
 import { Observable, Observer } from "rxjs";
-import { APIConfig } from "../core/api-interface";
+import { APIConfig } from "../model/api-config";
 import {
     ResourceDescriptor,
     ResourceDescriptorCollection,
@@ -20,7 +20,7 @@ export class Http {
     private static _instance: Http
     private static singleton: any = {}
     static get instance(): Http {
-        if(!Http._instance)
+        if (!Http._instance)
             Http._instance = new Http(Http.singleton)
         return Http._instance
     }
@@ -34,6 +34,9 @@ export class Http {
     connect(config: APIConfig): Observable<JSONResponse> {
         return Observable.create((observer: Observer<JSONResponse>) => {
 
+            let t: any = setTimeout(() => {
+                observer.error("API unreachable")
+            }, 3000)
             this._headers = this.getAuthHeaders(config.key)
             this._config = config
             let _xhr = this.createXHR(
@@ -45,7 +48,7 @@ export class Http {
                 }
             )
 
-            this.send(_xhr, observer)
+            this.send(_xhr, observer, null, t)
         })
     }
 
@@ -79,8 +82,10 @@ export class Http {
         })
     }
 
-    private send(_xhr: XMLHttpRequest, responseObserver: Observer<JSONResponse>, bodyStr: string = undefined) {
+    private send(_xhr: XMLHttpRequest, responseObserver: Observer<JSONResponse>, bodyStr: string = undefined, t: any = null) {
         const onLoad = () => {
+            if (t)
+                clearTimeout(t)
             // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
             let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
 
@@ -128,7 +133,8 @@ export class Http {
         };
         // error event handler
         const onError = (err: ErrorEvent) => {
-            console.log("Request fail", err.message)
+            if (t)
+                clearTimeout(t)
             unhandle()
             responseObserver.error(err);
         };
