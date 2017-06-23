@@ -1,7 +1,7 @@
 import * as commander from 'commander';
 import { JSONResponse } from "./core/http";
 import { APIConfig } from "./model/api-config";
-import { ConnectionfForm } from "./core/connectionf-form";
+import { ConnectionfForm } from "./core/connection-form";
 import { ResourceDescriptorCollection } from "./model/resource-descriptor";
 export class App {
 
