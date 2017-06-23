@@ -1,5 +1,9 @@
 import { Observable, Observer } from "rxjs";
 import { APIConfig } from "../core/api-interface";
+import { 
+    ResourceDescriptor, 
+    ResourceDescriptorCollection,
+    ResourceSynopsis } from "../model/resource-descriptor";
 
 const XMLHttpRequest: any = require("xmlhttprequest").XMLHttpRequest;
 const XSSI_PREFIX = /^\)\]\}',?\n/;
@@ -31,7 +35,23 @@ export class Http {
             this.send(_xhr, observer)
         })
     }
+
+    getResourceDescriptorCollection(): Observable<ResourceDescriptorCollection> {
+        return Observable.create((observer: Observer<ResourceDescriptorCollection>) => {
+            this.get("", {}).subscribe((response: JSONResponse) => {
+                let collection: ResourceDescriptorCollection = response.json.api
+                observer.next(collection)
+            },
+            observer.error)
+        })
+    }
     
+    getSynopsis(resource: string): Observable<ResourceSynopsis> {
+        return this.get(resource, {schema: "synopsis"}).map((response: JSONResponse) => {
+            return <ResourceSynopsis>response.json
+        })
+    }
+
     get(resource: string, search: {[key: string]: string}): Observable<JSONResponse> {
         search.output_format = "JSON"
         return Observable.create((observer: Observer<JSONResponse>) => {
