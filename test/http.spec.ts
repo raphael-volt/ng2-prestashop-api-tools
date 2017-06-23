@@ -13,7 +13,7 @@ let prodDesc: ResourceDescriptor
 describe('Http', () => {
 
     it('should connect successfully', (done) => {
-        http = new Http()
+        http = Http.instance
         http.connect({ url: "http://localhost:3001", key: "1XNCKZMANDQ8BFWGPPS5G8UNG7CL3Z7A" })
             .subscribe((response: JSONResponse) => {
                 if (response.ok)

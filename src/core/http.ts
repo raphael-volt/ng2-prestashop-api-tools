@@ -1,9 +1,10 @@
 import { Observable, Observer } from "rxjs";
 import { APIConfig } from "../core/api-interface";
-import { 
-    ResourceDescriptor, 
+import {
+    ResourceDescriptor,
     ResourceDescriptorCollection,
-    ResourceSynopsis } from "../model/resource-descriptor";
+    ResourceSynopsis
+} from "../model/resource-descriptor";
 
 const XMLHttpRequest: any = require("xmlhttprequest").XMLHttpRequest;
 const XSSI_PREFIX = /^\)\]\}',?\n/;
@@ -16,6 +17,18 @@ export interface JSONResponse {
 }
 export class Http {
 
+    private static _instance: Http
+    private static singleton: any = {}
+    static get instance(): Http {
+        if(!Http._instance)
+            Http._instance = new Http(Http.singleton)
+        return Http._instance
+    }
+
+    constructor(singleton: any) {
+        if (singleton !== Http.singleton)
+            throw new Error("singleton usage")
+    }
     private _config: APIConfig
 
     connect(config: APIConfig): Observable<JSONResponse> {
@@ -42,17 +55,17 @@ export class Http {
                 let collection: ResourceDescriptorCollection = response.json.api
                 observer.next(collection)
             },
-            observer.error)
+                observer.error)
         })
     }
-    
+
     getSynopsis(resource: string): Observable<ResourceSynopsis> {
-        return this.get(resource, {schema: "synopsis"}).map((response: JSONResponse) => {
+        return this.get(resource, { schema: "synopsis" }).map((response: JSONResponse) => {
             return <ResourceSynopsis>response.json
         })
     }
 
-    get(resource: string, search: {[key: string]: string}): Observable<JSONResponse> {
+    get(resource: string, search: { [key: string]: string }): Observable<JSONResponse> {
         search.output_format = "JSON"
         return Observable.create((observer: Observer<JSONResponse>) => {
             let _xhr = this.createXHR(
