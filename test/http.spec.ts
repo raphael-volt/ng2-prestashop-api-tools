@@ -5,24 +5,30 @@ import * as mocha from 'mocha';
 import { Http, JSONResponse } from "../src/core/http";
 import { ResourceDescriptor, ResourceDescriptorCollection, ResourceSynopsis } from "../src/model/resource-descriptor";
 import { APIConfig } from "../src/model/api-config";
+import { TestData } from "./test-data";
 const assert = chai.assert;
 
 let http: Http
 let prodDesc: ResourceDescriptor
 
 describe('Http', () => {
-
+    afterEach(() => {
+        if(! http.connected)
+            throw new Error("http must be connected ! Aborting!")
+    })
     it('should connect successfully', (done) => {
         http = Http.instance
         http.connect({ url: "http://localhost:3001", key: "1XNCKZMANDQ8BFWGPPS5G8UNG7CL3Z7A" })
             .subscribe((response: JSONResponse) => {
-                if (response.ok)
+                if (response.ok) {
+                    chai.expect(http.connected).to.be.true
                     done()
+                }
                 else
                     done("authentication fail")
             },
             (error: any) => {
-                done(error)
+                done("authentication fail")
             })
 
     });
@@ -42,6 +48,7 @@ describe('Http', () => {
 
     it('should get resource descriptors', (done) => {
         http.getResourceDescriptorCollection().subscribe((result: ResourceDescriptorCollection) => {
+            TestData.instance.resourceDescriptors = result
             chai.expect(result).to.not.null
             chai.expect(result).to.not.undefined
             let n: number = 0
@@ -64,6 +71,7 @@ describe('Http', () => {
                 done(error)
             })
     })
+    
     it('should get resource synopsis', (done) => {
         http.getSynopsis("products").subscribe((synopsis: ResourceSynopsis) => {
             chai.expect(synopsis).to.not.null
@@ -94,6 +102,11 @@ describe('Http', () => {
             chai.expect(synopsis.associations["product_bundle"]["product"]["quantity"]).not.to.null
             chai.expect(synopsis.associations["product_bundle"]["product"]["quantity"]).to.be.false
             done()
+        },
+        (error: any) => {
+            if(! error)
+                error = "get resource synopsis FAIL"
+            done(error)
         })
     })
 })

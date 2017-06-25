@@ -8,6 +8,7 @@ export interface ResourceDescriptor {
     post: boolean
     put: boolean
     delete: boolean
+    synopsis: boolean
 }
 
 export interface PropertyValidator {
@@ -39,6 +40,7 @@ export interface AssociationNodeProperty {
 }
 
 export interface ResourceSynopsis {
+    interfaceName?: string
     nodeName: string
     resource: string
     properties: PropertyDescriptorCollection

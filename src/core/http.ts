@@ -25,6 +25,11 @@ export class Http {
         return Http._instance
     }
 
+    private _connected: boolean
+    get connected(): boolean {
+        return this._connected
+    }
+
     constructor(singleton: any) {
         if (singleton !== Http.singleton)
             throw new Error("singleton usage")
@@ -49,6 +54,9 @@ export class Http {
             )
 
             this.send(_xhr, observer, null, t)
+        }).map((response: JSONResponse) => {
+            this._connected = response.ok
+            return response
         })
     }
 
@@ -84,8 +92,10 @@ export class Http {
 
     private send(_xhr: XMLHttpRequest, responseObserver: Observer<JSONResponse>, bodyStr: string = undefined, t: any = null) {
         const onLoad = () => {
-            if (t)
+            if (t) {
                 clearTimeout(t)
+                t = null
+            }
             // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
             let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
 
@@ -124,19 +134,21 @@ export class Http {
                     return
                 }
                 unhandle()
-                responseObserver.next(response);
+                responseObserver.next(response)
                 // TODO(gdi2290): defer complete if array buffer until done
-                responseObserver.complete();
-                return;
+                responseObserver.complete()
             }
-            responseObserver.error("Request fail");
+            else
+                onError()
         };
         // error event handler
-        const onError = (err: ErrorEvent) => {
-            if (t)
+        const onError = (err?: ErrorEvent) => {
+            if (t) {
                 clearTimeout(t)
+                t = null
+            }
             unhandle()
-            responseObserver.error(err);
+            responseObserver.error("Request fail");
         };
 
         const unhandle = () => {

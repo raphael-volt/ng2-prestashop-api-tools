@@ -3,6 +3,7 @@ import { JSONResponse } from "./core/http";
 import { APIConfig } from "./model/api-config";
 import { ConnectionfForm } from "./core/connection-form";
 import { ResourceDescriptorCollection } from "./model/resource-descriptor";
+
 export class App {
 
     private commander: commander.CommanderStatic;
@@ -31,6 +32,13 @@ export class App {
             console.log("No operation!")
             process.exit(1)
         }
+        if(install)
+            this.checkInstall()
+        else
+            this.checkUpdate()
+    }
+
+    private initConnection() {
 
         let form: ConnectionfForm = new ConnectionfForm()
         
@@ -39,9 +47,25 @@ export class App {
             process.exit(0)
         })
     }
-
+/*
+--__dirname
+    -- prestashop-api
+        prestashop-api.module.ts
+        prestashop-api.service.ts
+        -- core
+            vo.class.ts
+            vo.descriptor.ts
+            vo.descriptor.ts
+        -- config
+            api-config.module.ts
+            api-config.service.ts
+            api-config.ts
+        -- form
+            api-form.module.ts
+            api-form-service.ts
+*/
     private checkInstall() {
-        console.log("checkInstall")
+        
     }
 
     private checkUpdate() {
