@@ -11,7 +11,8 @@ import {
     CORE_DIRNAME,
     SHARED_DIRNAME,
     RESOURCE_TYPES_FILENAME,
-    RESOURCE_DESCRIPTOR_FILENAME
+    RESOURCE_DESCRIPTOR_FILENAME,
+    RESOURCE_SERVICE_FILENAME
 } from "../model/templates-manager"
 import { ProgressBar } from "../utils/progress-bar";
 
@@ -160,9 +161,42 @@ export class InstallController {
                 InstallProcess.VO_DESCRIPTOR, InstallStatus.COMPLETE,
                 this.numRessources - this.descriptorsList.length
             )
+
+            this.notify(
+                InstallProcess.VO_SERVICES, InstallStatus.INIT,
+                0
+            )
+            this.currentFileName = path.join(this.currentDir, LIBRARY_NAME, RESOURCE_SERVICE_FILENAME + ".ts")
+            fs.writeFile(this.currentFileName, TemplatesManager.servicesHeader(), (error => {
+                if (error) {
+                    throw error
+                }
+                this.servicesInputs = TemplatesManager.getServiceTemplateInputs()
+                this.progressBar.message = "creating resources services"
+                this.progressBar.update(0, this.numRessources)
+                this.nextService()
+            }))
         }
     }
-
+    private nextService() {
+        if(this.servicesInputs.length) {
+            fs.appendFile(this.currentFileName, TemplatesManager.serviceTemplate(this.servicesInputs.shift()), error => {
+                this.notify(
+                    InstallProcess.VO_SERVICES, InstallStatus.PROGRESS,
+                    this.numRessources - this.servicesInputs.length
+                )
+                this.nextService()
+            })
+        } else {
+            this.notify(
+                InstallProcess.VO_SERVICES,
+                InstallStatus.COMPLETE,
+                this.numRessources
+            )
+            // git clone !!!
+        }
+    }
+    private servicesInputs: { type: string, descriptor: string }[]
     private getResourceDescriptorsNames(): string[] {
         let l: string[] = []
         for (let p in this.resourceDescriptors) {
@@ -200,3 +234,12 @@ export class InstallController {
 
     }
 }
+/*
+echo "# prestashop-api-core" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/raphael-volt/prestashop-api-core.git
+git push -u origin master
+
+*/

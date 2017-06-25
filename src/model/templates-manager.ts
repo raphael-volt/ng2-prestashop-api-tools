@@ -34,7 +34,7 @@ export const ABSTRACT_RESOURCE_NAME: string = "AbstractResource"
 export const ABSTRACT_RESOURCE_DESCRIPTOR_NAME: string = "AbstractResourceDescriptor"
 export const ABSTRACT_SERVICE_NAME: string = "AbstractService"
 
-export const ABSTRACT_RESOURCE_TYPES_FILENAME: string = "abstract-resource.types"
+export const ABSTRACT_RESOURCE_FILENAME: string = "abstract-resource"
 export const ABSTRACT_RESOURCE_DESCRIPTOR_FILENAME: string = "abstract-resource-descrptor"
 export const ABSTRACT_RESOURCE_SERVICE_FILENAME: string = "abstract-resource.service"
 
@@ -50,14 +50,10 @@ export const API_SERVICE_NAME: string = "PrestashopApiService"
 export const API_CONFIG_SERVICE_NAME: string = "ApiConfigService"
 export const API_MODULE_NAME: string = "PrestashopApiModule"
 
-const RESOURCES_HEADER: string = `export abstract class ${ABSTRACT_RESOURCE_NAME} {
-    id?: number
-    associations?: {
-        [name: string]: {
-            [name: string]: string
-        }[]
-    }
-}`
+const REPO_URL: string = "https://github.com/raphael-volt/prestashop-api-core.git"
+
+const RESOURCES_HEADER: string = `import { ${ABSTRACT_RESOURCE_NAME} } from '../${CORE_DIRNAME}/${ABSTRACT_RESOURCE_FILENAME}'
+`
 
 const SERVICE_FILE_HEADER: string = `import { Injectable } from '@angular/core'
 import { Http } from '@angular/http'
@@ -67,18 +63,18 @@ import {
     {{#resources}}
     {{resource}}{{#coma}},{{/coma}}
     {{/resources}}
-} from './{{resourceSRC}}'
+} from './${SHARED_DIRNAME}/${RESOURCE_TYPES_FILENAME}'
 import {
     {{#descriptors}}
     {{descriptor}}{{#coma}},{{/coma}}
     {{/descriptors}}
-} from './{{descriptorsSRC}}'
+} from './${SHARED_DIRNAME}/${RESOURCE_DESCRIPTOR_FILENAME}'
 `
 
 const SERVICE_TEMPLATE: string = `@Injectable()
 export class {{type}}Service extends AbstractResourceService<{{type}}> {
 	constructor(http: Http, configService: ${API_CONFIG_SERVICE_NAME}) {
-        super(http, configService, new {{type}}Descriptor)
+        super(http, configService, new {{descriptor}})
     }
 }
 `
@@ -156,7 +152,7 @@ export class {{voClass}}Descriptor extends ${ABSTRACT_RESOURCE_DESCRIPTOR_NAME}<
 }
 `
 const DESCRIPTOR_TEMPLATE: string = `
-export class {{voClass}}Descriptor extends ${ABSTRACT_RESOURCE_DESCRIPTOR_NAME}<{{voClass}}> {
+export class {{descriptorName}} extends ${ABSTRACT_RESOURCE_DESCRIPTOR_NAME}<{{voClass}}> {
     constructor() {
         super("{{resource}}", "{{nodeName}}",
             {{descriptor.get}}, {{descriptor.post}}, {{descriptor.put}}, {{descriptor.delete}},
@@ -216,19 +212,60 @@ export class TemplatesManager {
         return RESOURCES_HEADER
     }
     static resources: string[] = []
+    static descriptors: string[] = []
     static descriptorHeader(): string {
         const tm = TemplatesManager
         tm.resources.sort()
         let resources: { resource: string, coma: boolean }[] = []
         // let l: string[] = [ABSTRACT_RESOURCE_NAME].concat(tm.resources)
-        for(let r of tm.resources)
-            resources.push({resource: r, coma: true})
-        resources[resources.length-1].coma = false
+        for (let r of tm.resources)
+            resources.push({ resource: r, coma: true })
+        resources[resources.length - 1].coma = false
         return mustache.render(DESCRIPTOR_FILE_HEADER, { resources: resources })
     }
+    static createRenderableList(inputs: string[], propertie: string) {
+        let output: { coma: boolean, [props: string]: any }[] = []
+        let item: { coma: boolean, [props: string]: any }
+        let i: number
+        const n: number = inputs.length
+        for (i = 0; i < n; i++) {
+            item = { coma: i < n - 1 }
+            item[propertie] = inputs[i]
+            output.push(item)
+        }
+        return output
+    }
+    static servicesHeader(): string {
+        const tm = TemplatesManager
+        return mustache.render(SERVICE_FILE_HEADER, {
+            resources: tm.createRenderableList(tm.resources, "resource"),
+            descriptors: tm.createRenderableList(tm.descriptors, "descriptor")
+        })
+    }
+
+    static getServiceTemplateInputs(): { type: string, descriptor: string }[] {
+        let tm = TemplatesManager
+        let inputs: { type: string, descriptor: string }[] = []
+        let i:number
+        const n: number = tm.resources.length
+        for(i=0; i<n; i++) {
+            inputs.push ({
+                type: tm.resources[i],
+                descriptor: tm.descriptors[i]
+            })
+        }
+        return inputs
+    }
+    static serviceTemplate(input: { type: string, descriptor: string }): string {
+        return mustache.render(SERVICE_TEMPLATE, input)
+    }
+
     static descriptorTemplate(synopsis: ResourceSynopsis, descriptor: ResourceDescriptor): string {
         let tm = TemplatesManager
+        const voClass: string = tm.getInterfaceName(synopsis.nodeName)
+        const descriptorName: string = `${voClass}Descriptor`
         let data: {
+            descriptorName: string
             voClass: string,
             resource: string,
             nodeName: string,
@@ -238,6 +275,7 @@ export class TemplatesManager {
             associations: any[]
         } = {
                 voClass: tm.getInterfaceName(synopsis.nodeName),
+                descriptorName: descriptorName,
                 resource: synopsis.resource,
                 nodeName: synopsis.nodeName,
                 descriptor: descriptor,
@@ -294,6 +332,7 @@ export class TemplatesManager {
             data.associations.sort(tm.sortByName)
             data.associations[data.associations.length - 1].coma = false
         }
+        tm.descriptors.push(data.descriptorName)
         return mustache.render(DESCRIPTOR_TEMPLATE, data)
     }
 

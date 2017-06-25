@@ -67,6 +67,15 @@ describe('InstallController', () => {
             }
         })
     })
+    it("should watch create services", (done) => {
+        let sub: any = ctrl.notifier.subscribe((event: InstallEvent) => {
+            expect(event.process).to.equal(InstallProcess.VO_SERVICES)
+            if (event.process == InstallProcess.VO_SERVICES && event.status == InstallStatus.COMPLETE) {
+                sub.unsubscribe()
+                done()
+            }
+        })
+    })
 
     it.skip("should create a simple prestashop object", (done) => {
         http.getSynopsis("addresses").subscribe((synopsis: ResourceSynopsis) => {
