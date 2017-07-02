@@ -1,6 +1,6 @@
 
 export interface ResourceDescriptorCollection {
-    [name: string]: ResourceDescriptor
+    [index: number]: ResourceDescriptor
 }
 
 export interface ResourceDescriptor {
@@ -9,6 +9,7 @@ export interface ResourceDescriptor {
     put: boolean
     delete: boolean
     synopsis: boolean
+    resource: string
 }
 
 export interface PropertyValidator {

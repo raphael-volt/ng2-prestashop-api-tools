@@ -52,14 +52,14 @@ describe('Http', () => {
             chai.expect(result).to.not.null
             chai.expect(result).to.not.undefined
             let n: number = 0
+            let desc: ResourceDescriptor
             let productsFound: boolean = true
             for (let p in result) {
-                if (!productsFound && p == "products")
-                    productsFound = true
+                if (result[p].resource == "products")
+                    desc = result[p]
                 n++
             }
             chai.expect(n).to.be.greaterThan(0)
-            let desc: ResourceDescriptor = result["products"]
             chai.expect(desc.get).to.be.true
             chai.expect(desc.post).to.be.true
             chai.expect(desc.put).to.be.true
@@ -105,7 +105,7 @@ describe('Http', () => {
         },
         (error: any) => {
             if(! error)
-                error = "get resource synopsis FAIL"
+                error = new Error("get resource synopsis FAIL")
             done(error)
         })
     })

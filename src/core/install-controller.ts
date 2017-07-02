@@ -89,7 +89,12 @@ export class InstallController {
         this.notify(InstallProcess.VO, InstallStatus.INIT, 0)
         this.nextResource()
     }
-
+    private getDescriptor(resource: string) {
+        for(let i in this.resourceDescriptors)
+            if(this.resourceDescriptors[i].resource == resource)
+                return this.resourceDescriptors[i]
+        return undefined
+    }
     private nextResource() {
         if (this.resources.length) {
             let resource: string = this.resources.shift()
@@ -97,7 +102,7 @@ export class InstallController {
 
                 this.synopsisCollection[resource] = {
                     synopsis: synopsis,
-                    descriptor: this.resourceDescriptors[resource]
+                    descriptor: this.getDescriptor(resource)
                 }
 
                 fs.appendFile(this.currentFileName, TemplatesManager.interfaceTamplate(synopsis), (error: any) => {
@@ -201,7 +206,7 @@ export class InstallController {
         let l: string[] = []
         for (let p in this.resourceDescriptors) {
             if (this.resourceDescriptors[p].synopsis)
-                l.push(p)
+                l.push(this.resourceDescriptors[p].resource)
         }
         return l.sort()
     }

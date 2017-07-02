@@ -63,8 +63,9 @@ export class Http {
     getResourceDescriptorCollection(): Observable<ResourceDescriptorCollection> {
         return Observable.create((observer: Observer<ResourceDescriptorCollection>) => {
             this.get("", {}).subscribe((response: JSONResponse) => {
-                let collection: ResourceDescriptorCollection = response.json.api
+                let collection: ResourceDescriptorCollection = response.json
                 observer.next(collection)
+                observer.complete()
             },
                 observer.error)
         })

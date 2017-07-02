@@ -7,14 +7,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { Http } from "../src/core/http";
-import { TestData } from "./test-data";
-import { InstallController, LIB_DIRNAME, InstallEvent, InstallStatus, InstallProcess } from "../src/core/install-controller";
 import { 
     ResourceDescriptor,
     ResourceSynopsis
  } from "../src/model/resource-descriptor";
-
+import { 
+    InstallController, 
+    LIB_DIRNAME, 
+    InstallEvent, 
+    InstallStatus, 
+    InstallProcess 
+} from "../src/core/install-controller";
 import { TemplatesManager } from "../src/model/templates-manager";
+
+import { TestData } from "./test-data";
+
 let testData: TestData = TestData.instance
 let http: Http = Http.instance
 let errorFlag: boolean = false
@@ -32,12 +39,10 @@ describe('InstallController', () => {
         if (!http.connected)
             throw new Error("http must be connected ! Aborting!")
         ctrl = new InstallController()
-        console.log(LIB_DIR_PATH)
         rmdir(LIB_DIR_PATH)
         if(! ctrl.checkDirectory(CURRENT_DIR)) {
             throw new Error("Invalide output directory ! Aborting!")
         }
-
     })
 
     afterEach(() => {
@@ -54,10 +59,14 @@ describe('InstallController', () => {
                 sub.unsubscribe()
                 done()
             }
+        },
+        error => {
+            done(error)
         })
         ctrl.makeInstall(testData.resourceDescriptors)
         expect(fs.existsSync(LIB_DIR_PATH)).to.be.true
     })
+
     it("should watch create descriptors", (done) => {
         let sub: any = ctrl.notifier.subscribe((event: InstallEvent) => {
             expect(event.process).to.equal(InstallProcess.VO_DESCRIPTOR)
@@ -67,6 +76,7 @@ describe('InstallController', () => {
             }
         })
     })
+
     it("should watch create services", (done) => {
         let sub: any = ctrl.notifier.subscribe((event: InstallEvent) => {
             expect(event.process).to.equal(InstallProcess.VO_SERVICES)
@@ -77,7 +87,7 @@ describe('InstallController', () => {
         })
     })
 
-    it.skip("should create a simple prestashop object", (done) => {
+    it("should create a simple prestashop object", (done) => {
         http.getSynopsis("addresses").subscribe((synopsis: ResourceSynopsis) => {
             fs.writeFileSync(
                 path.join(CURRENT_DIR, "test-object.ts"),
@@ -86,7 +96,8 @@ describe('InstallController', () => {
             done()
         })
     })
-    it.skip("should create a prestashop object with associations", (done) => {
+
+    it("should create a prestashop object with associations", (done) => {
         http.getSynopsis("products").subscribe((synopsis: ResourceSynopsis) => {
             fs.appendFileSync(
                 path.join(CURRENT_DIR, "test-object.ts"),
@@ -95,7 +106,8 @@ describe('InstallController', () => {
             done()
         })
     })
-    it.skip("should create a simple descriptor", (done) => {
+
+    it("should create a simple descriptor", (done) => {
         
         http.getSynopsis("addresses").subscribe((synopsis: ResourceSynopsis) => {
             fs.writeFileSync(
@@ -105,13 +117,15 @@ describe('InstallController', () => {
                     post: true,
                     put: true,
                     delete: true,
-                    synopsis: true
+                    synopsis: true,
+                    resource: "addresses"
                 })
             )
             done()
         })
     })
-    it.skip("should create a descriptor with associations", (done) => {
+
+    it("should create a descriptor with associations", (done) => {
         
         http.getSynopsis("products").subscribe((synopsis: ResourceSynopsis) => {
             fs.appendFileSync(
@@ -121,12 +135,14 @@ describe('InstallController', () => {
                     post: true,
                     put: true,
                     delete: true,
-                    synopsis: true
+                    synopsis: true,
+                    resource: "products"
                 })
             )
             done()
         })
     })
+
     it("should stop process", (done) => {
         console.log("INSTALL TEST DONE")
         setTimeout(()=>{
