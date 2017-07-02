@@ -1,27 +1,30 @@
 {
 	"compileOnSave": false,
 	"compilerOptions": {
-		"target": "es6",
-		"declaration": false,
+		"target": "es5",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"removeComments": false,
+		"noImplicitAny": false,
+		"declaration": true,
 		"module": "commonjs",
-		"baseUrl": ".",
 		"sourceMap": true,
 		"moduleResolution": "node",
-		"noImplicitAny": true,
 		"outDir": "dist",
+		"noStrictGenericChecks": true,
 		"preserveConstEnums": true,
-		"removeComments": true,
-		"typeRoots": [
-			"node_modules/*"
-		],
 		"lib": [
 			"es2016",
 			"dom"
 		],
+		"baseUrl": "./",
+		"typeRoots": [
+			"node_modules/@types",
+			"node_modules"
+		],
 		"types": [
 			"commander",
 			"node",
-			"mustache",
 			"mocha",
 			"chai",
 			"sinon"
