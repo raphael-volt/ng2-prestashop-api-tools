@@ -74,7 +74,7 @@ import {
 const SERVICE_TEMPLATE: string = `@Injectable()
 export class {{type}}Service extends AbstractResourceService<{{type}}> {
 	constructor(http: Http, configService: ${API_CONFIG_SERVICE_NAME}) {
-        super(http, configService, new {{descriptor}})
+        super(http, configService, new {{descriptor}}())
     }
 }
 `

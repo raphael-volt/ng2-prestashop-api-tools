@@ -16,7 +16,7 @@ import {
 } from "../model/templates-manager"
 import { ProgressBar } from "../utils/progress-bar";
 
-import * as fs from "fs"
+import * as fs from "fs-extra"
 import * as path from 'path'
 
 export const LIB_DIRNAME: string = LIBRARY_NAME
@@ -49,7 +49,7 @@ export class InstallController {
     private http: Http = Http.instance
     private currentDir: string
     checkDirectory(currentDir: string): boolean {
-        this.currentDir = fs.existsSync(path.join(currentDir, LIB_DIRNAME)) ?
+        this.currentDir = fs.pathExistsSync(path.join(currentDir, LIB_DIRNAME)) ?
             undefined : currentDir
         return this.currentDir !== undefined
     }
@@ -74,9 +74,7 @@ export class InstallController {
             throw new Error("Installation directory has not been tested")
 
         this.resourceDescriptors = resourceDescriptors
-
-        fs.mkdirSync(path.join(this.currentDir, LIB_DIRNAME))
-        fs.mkdirSync(path.join(this.currentDir, LIB_DIRNAME, SHARED_DIRNAME))
+        fs.ensureDirSync(path.join(this.currentDir, LIB_DIRNAME, SHARED_DIRNAME))
 
         this.resources = this.getResourceDescriptorsNames()
         this.numRessources = this.resources.length
