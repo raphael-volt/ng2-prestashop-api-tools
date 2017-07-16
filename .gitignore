@@ -59,6 +59,7 @@ typings/
 
 dist
 tests
+package-lock.json
 
 # eclipse
 .project
