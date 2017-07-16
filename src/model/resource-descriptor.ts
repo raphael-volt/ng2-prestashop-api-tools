@@ -14,7 +14,7 @@ export interface ResourceDescriptor {
 
 export interface PropertyValidator {
     method: string
-    maxSize: boolean
+    maxSize: number
 }
 
 export interface PropertyDescriptorCollection {

@@ -1,3 +1,153 @@
+/*
+
+GENERIC VALUE TYPES 
+
+isBool A boolean value (true or false). n/a
+
+isFloat A floating-point value (between -3.4 × 10^38 and +3.4 × 10^38). n/a
+
+isInt An integral value (between -2,147,483,648 and 2,147,483,647). n/a
+
+isNullOrUnsignedId An integral and unsigned value (between 0 and 4294967296), or a NULL value. n/a
+
+isSerializedArray PHP serialized data. /^a:[0-9]+:{.*;}$/
+
+isString A string of characters. n/a
+
+isUnsignedId An integral and unsigned value (between 0 and 4294967296). n/a
+
+SPECIFIC VALUE TYPES
+
+isBirthDate A valid date, in YYYY-MM-DD format. /^([0-9]{4})-((0?[1-9])|(1[0-2]))-((0?[1-9])|([1-2][0-9])|(3[01]))( [0-9]{2}:[0-9]{2}:[0-9]{2})?$/
+
+isCleanHtml Must not contain invalid HTML tags, nor XSS.
+
+isColor A valid HTML/CSS color, in #xxxxxx format or text format. /^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/
+
+isEmail A valid e-mail address. /^[a-z0-9!#$%&\'*+\/=?^`{}|~_-]+[.a-z0-9!#$%&\'*+\/=?^`{}|~_-]*@[a-z0-9]+[._a-z0-9-]*\.[a-z0-9]+$/ui
+
+isImageSize A valid image size, between 0 and 9999. /^[0-9]{1,4}$/
+
+isLanguageCode A valid language code, in XX or XX-XX format. /^[a-zA-Z]{2}(-[a-zA-Z]{2})?$/
+
+isLanguageIsoCode A valid ISO language code, in XX or XXX format. /^[a-zA-Z]{2,3}$/
+
+isLinkRewrite A valid link rewrite. /^[_a-zA-Z0-9-]+$/
+
+isMd5 A valid MD5 string: 32 characters, mixing lowercase, uppercase and numerals. /^[a-f0-9A-F]{32}$/
+
+isNumericIsoCode A valid ISO code, in 00 or 000 format. /^[0-9]{2,3}$/
+
+isPasswd A valid password, in. between 5 and 32 characters long. /^[.a-zA-Z_0-9-!@#$%\^&*()]{5,32}$/
+
+isPasswdAdmin A valid password, between 8 and 32 characters long. /^[.a-zA-Z_0-9-!@#$%\^&*()]{8,32}$/
+
+isPhpDateFormat A valid PHP date – in fact, a string without '<' nor '>'. /^[^<>]+$/
+
+isPriceDisplayMethod A valid price display method, meaning the value be equals to constants PS_TAX_EXC or PS_TAX_INC. n/a
+
+isReference A valid product reference. /^[^<>;={}]*$/u
+
+isUrl A valid URL. /^[~:#,%&_=\(\)\.\? \+\-@\/a-zA-Z0-9]+$/
+
+
+NAMES 
+
+isCatalogName A valid product or category name. /^[^<>;=#{}]*$/u
+
+isCarrierName A valid carrier name. /^[^<>;=#{}]*$/u
+
+isConfigName A valid configuration key. /^[a-zA-Z_0-9-]+$/
+
+isGenericName A valid standard name. /^[^<>;=#{}]*$/u
+
+isImageTypeName A valid image type /^[a-zA-Z0-9_ -]+$/
+
+isName A valid name. /^[^0-9!<>,;?=+()@#"°{}_$%:]*$/u
+
+isTplName A valid template name. /^[a-zA-Z0-9_-]+$/
+
+
+LOCATIONS
+
+isAddress A valid postal address. /^[^!<>?=+@{}_$%]*$/u
+
+isCityName A valid city name. /^[^!<>;?=+@#"°{}_$%]*$/u
+
+isCoordinate A valid latitude-longitude coordinates, in 00000.0000 form. /^\-?[0-9]{1,8}\.[0-9]{1,8}$/
+
+isMessage A valid message. /[<>{}]/i
+
+isPhoneNumber A valid phone number. /^[+0-9. ()-]*$/
+
+isPostCode A valid postal code. /^[a-zA-Z 0-9-]+$/
+
+isStateIsoCode A valid state ISO code. /^[a-zA-Z0-9]{2,3}((-)[a-zA-Z0-9]{1,3})?$/
+
+isZipCodeFormat A valid zipcode format. /^[NLCnlc -]+$/
+
+
+PRODUCTS
+
+isAbsoluteUrl A valid absolute URL. /^https?:\/\/[:#%&_=\(\)\.\? \+\-@\/a-zA-Z0-9]+$/
+
+isDniLite A valid DNI (Documento Nacional de Identidad) identifier. Specific to Spanish shops. /^[0-9A-Za-z-.]{1,16}$/
+
+isEan13 A valid barcode (EAN13). /^[0-9]{0,13}$/
+
+isLinkRewrite A valid friendly URL. /^[_a-zA-Z0-9-]+$/
+
+isPrice A valid price display method (either PS_TAX_EXC or PS_TAX_INC). n/a
+
+isUpc A valid barcode (UPC). /^[0-9]{0,12}$/
+
+*/
+const VALIDATORS_DESCRIPTORS = {
+    isBool: ["A boolean value (true or false).", "undefined"],
+    isFloat: ["A floating-point value (between -3.4 × 10^38 and +3.4 × 10^38).", "undefined"],
+    isInt: ["An integral value (between -2,147,483,648 and 2,147,483,647).", "undefined"],
+    isNullOrUnsignedId: ["An integral and unsigned value (between 0 and 4294967296), or a NULL value.", "undefined"],
+    isSerializedArray: ["PHP serialized data.", '/^a:[0-9]+:{.*;}$/'],
+    isString: ["A string of characters.", "undefined"],
+    isUnsignedId: ["An integral and unsigned value (between 0 and 4294967296).", "undefined"],
+    isBirthDate: ["A valid date, in YYYY-MM-DD format.", '/^([0-9]{4})-((0?[1-9])|(1[0-2]))-((0?[1-9])|([1-2][0-9])|(3[01]))( [0-9]{2}:[0-9]{2}:[0-9]{2})?$/'],
+    isCleanHtml: ["Must not contain invalid HTML tags, nor XSS.", "undefined"],
+    isColor: ["A valid HTML/CSS color, in #xxxxxx format or text format.", '/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/'],
+    isEmail: ["A valid e-mail address.", "/^[a-z0-9!#$%&\\'*+\\/=?^`{}|~_-]+[.a-z0-9!#$%&\\'*+\\/=?^`{}|~_-]*@[a-z0-9]+[._a-z0-9-]*\\.[a-z0-9]+$/ui"],
+    isImageSize: ["A valid image size, between 0 and 9999.", '/^[0-9]{1,4}$/'],
+    isLanguageCode: ["A valid language code, in XX or XX-XX format.", '/^[a-zA-Z]{2}(-[a-zA-Z]{2})?$/'],
+    isLanguageIsoCode: ["A valid ISO language code, in XX or XXX format.", '/^[a-zA-Z]{2,3}$/'],
+    isLinkRewrite: ["A valid link rewrite.", '/^[_a-zA-Z0-9-]+$/'],
+    isMd5: ["A valid MD5 string: 32 characters, mixing lowercase, uppercase and numerals.", '/^[a-f0-9A-F]{32}$/'],
+    isNumericIsoCode: ["A valid ISO code, in 00 or 000 format.", '/^[0-9]{2,3}$/'],
+    isPasswd: ["A valid password, in. between 5 and 32 characters long.", '/^[.a-zA-Z_0-9-!@#$%\\^&*()]{5,32}$/'],
+    isPasswdAdmin: ["A valid password, between 8 and 32 characters long.", '/^[.a-zA-Z_0-9-!@#$%\\^&*()]{8,32}$/'],
+    isPhpDateFormat: ["A valid PHP date – in fact, a string without '<' nor '>'.", '/^[^<>]+$/'],
+    isPriceDisplayMethod: ["A valid price display method, meaning the value be equals to constants PS_TAX_EXC or PS_TAX_INC.", "undefined"],
+    isReference: ["A valid product reference.", '/^[^<>;={}]*$/u'],
+    isUrl: ["A valid URL.", '/^[~:#,%&_=\\(\\)\\.\\? \\+\\-@\\/a-zA-Z0-9]+$/'],
+    isCatalogName: ["A valid product or category name.", '/^[^<>;=#{}]*$/u'],
+    isCarrierName: ["A valid carrier name.", '/^[^<>;=#{}]*$/u'],
+    isConfigName: ["A valid configuration key.", '/^[a-zA-Z_0-9-]+$/'],
+    isGenericName: ["A valid standard name.", '/^[^<>;=#{}]*$/u'],
+    isImageTypeName: ["A valid image type.", '/^[a-zA-Z0-9_ -]+$/'],
+    isName: ["A valid name.", '/^[^0-9!<>,;?=+()@#"°{}_$%:]*$/u'],
+    isTplName: ["A valid template name.", '/^[a-zA-Z0-9_-]+$/'],
+    isAddress: ["A valid postal address.", '/^[^!<>?=+@{}_$%]*$/u'],
+    isCityName: ["A valid city name.", '/^[^!<>;?=+@#"°{}_$%]*$/u'],
+    isCoordinate: ["A valid latitude-longitude coordinates, in 00000.0000 form.", '/^\\-?[0-9]{1,8}\\.[0-9]{1,8}$/'],
+    isMessage: ["A valid message.", '/[<>{}]/i'],
+    isPhoneNumber: ["A valid phone number.", '/^[+0-9. ()-]*$/'],
+    isPostCode: ["A valid postal code.", '/^[a-zA-Z 0-9-]+$/'],
+    isStateIsoCode: ["A valid state ISO code.", '/^[a-zA-Z0-9]{2,3}((-)[a-zA-Z0-9]{1,3})?$/'],
+    isZipCodeFormat: ["A valid zipcode format.", '/^[NLCnlc -]+$/'],
+    isAbsoluteUrl: ["A valid absolute URL.", '/^https?:\\/\\/[:#%&_=\\(\\)\\.\\? \\+\\-@\\/a-zA-Z0-9]+$/'],
+    isDniLite: ["A valid DNI (Documento Nacional de Identidad) identifier. Specific to Spanish shops.", '/^[0-9A-Za-z-.]{1,16}$/'],
+    isEan13: ["A valid barcode (EAN13).", '/^[0-9]{0,13}$/'],
+    isPrice: ["A valid price display method (either PS_TAX_EXC or PS_TAX_INC).", "undefined"],
+    isUpc: ["A valid barcode (UPC).", '/^[0-9]{0,12}$/']
+}
+
 
 /*
 FILE STRUCTURES
@@ -14,6 +164,8 @@ core
     abstract-resource.service.ts
     abstract-resource-descrptor.ts
 */
+
+import { TsLibStringUtils } from "ts-lib-string-utils";
 
 import * as mustache from 'mustache'
 
@@ -50,6 +202,8 @@ export const API_SERVICE_NAME: string = "PrestashopApiService"
 export const API_CONFIG_SERVICE_NAME: string = "ApiConfigService"
 export const API_MODULE_NAME: string = "PrestashopApiModule"
 
+export const VALIDATORS_FILENAME: string = "validators"
+
 const REPO_URL: string = "https://github.com/raphael-volt/prestashop-api-core.git"
 
 const RESOURCES_HEADER: string = `import { ${ABSTRACT_RESOURCE_NAME} } from '../${CORE_DIRNAME}/${ABSTRACT_RESOURCE_FILENAME}'
@@ -85,11 +239,6 @@ import {
     {{/resources}}
 } from './${RESOURCE_TYPES_FILENAME}'
 `
-
-const INDEX_TEMPLATE: string = `{{#files}}
-export * from './{{name}}'
-{{/files}}`
-
 
 const TYPES_TEMPLATE: string = `
 export interface {{interfaceName}} extends ${ABSTRACT_RESOURCE_NAME} {
@@ -158,7 +307,7 @@ export class {{descriptorName}} extends ${ABSTRACT_RESOURCE_DESCRIPTOR_NAME}<{{v
             {{descriptor.get}}, {{descriptor.post}}, {{descriptor.put}}, {{descriptor.delete}},
             {    
             {{#properties}}
-                {{name}}: [{{desc.translatable}}, {{desc.required}}, {{desc.readOnly}}, "{{desc.validator.method}}", {{desc.validator.maxSize}}]{{#coma}},{{/coma}}
+                {{name}}: [{{desc.translatable}}, {{desc.required}}, {{desc.readOnly}}, {{desc.validator.method}}, {{desc.validator.maxSize}}]{{#coma}},{{/coma}}
             {{/properties}}
             }{{#hasAssociations}},
             {
@@ -175,6 +324,37 @@ export class {{descriptorName}} extends ${ABSTRACT_RESOURCE_DESCRIPTOR_NAME}<{{v
         )
     }
 }
+`
+
+const VALIDATOR_TEMPLATE: string = `export enum ValidationErrors {
+    NONE,
+    TO_LONG,
+    {{#errors}}
+    {{name}}{{#coma}},{{/coma}}
+    {{/errors}}
+}
+
+export const VALIDATIONS_DESCRIPTIONS: { [code: number]: string } = {
+    [ValidationErrors.NONE]: "",
+    [ValidationErrors.TO_LONG]: "Maximum length reached",
+    {{#errors}}
+    [ValidationErrors.{{name}}]: "{{{description}}}"{{#coma}},{{/coma}}
+    {{/errors}}
+}
+
+const validate = (input: string, maxLength: number, re: RegExp, error: ValidationErrors): ValidationErrors => {
+    if (maxLength && input.length > maxLength)
+        return ValidationErrors.TO_LONG
+    if (re && !re.test(input))
+        return error
+    return ValidationErrors.NONE
+}
+{{#errors}}
+
+export const {{func}} = (input: string, maxLength): ValidationErrors => {
+    return validate(input, maxLength, {{{regexp}}}, ValidationErrors.{{name}})
+}
+{{/errors}}
 `
 
 export class TemplatesManager {
@@ -211,6 +391,7 @@ export class TemplatesManager {
     static resourcesHeader(): string {
         return RESOURCES_HEADER
     }
+    static validators: string[] = []
     static resources: string[] = []
     static descriptors: string[] = []
     static descriptorHeader(): string {
@@ -244,12 +425,12 @@ export class TemplatesManager {
     }
 
     static getServiceTemplateInputs(): { type: string, descriptor: string }[] {
-        let tm = TemplatesManager
+        const tm = TemplatesManager
         let inputs: { type: string, descriptor: string }[] = []
-        let i:number
+        let i: number
         const n: number = tm.resources.length
-        for(i=0; i<n; i++) {
-            inputs.push ({
+        for (i = 0; i < n; i++) {
+            inputs.push({
                 type: tm.resources[i],
                 descriptor: tm.descriptors[i]
             })
@@ -258,6 +439,28 @@ export class TemplatesManager {
     }
     static serviceTemplate(input: { type: string, descriptor: string }): string {
         return mustache.render(SERVICE_TEMPLATE, input)
+    }
+
+    static validatorsTemplate(): string {
+        const tm = TemplatesManager
+        let enums: any[] = []
+        const re: RegExp = /-/g
+        const sep: string = "_"
+        let f: string
+        for (f of tm.validators) {
+            if(VALIDATORS_DESCRIPTORS[f] !== undefined) {
+                enums.push({
+                    func: f,
+                    name: TsLibStringUtils.kebab(f).replace(re, sep).toUpperCase(),
+                    regexp: VALIDATORS_DESCRIPTORS[f][1],
+                    description: VALIDATORS_DESCRIPTORS[f][0]
+                })
+            }
+        }
+        for(let i=0; i<enums.length-1; i++) {
+            enums[i].coma = true
+        }
+        return mustache.render(VALIDATOR_TEMPLATE, {errors: enums})
     }
 
     static descriptorTemplate(synopsis: ResourceSynopsis, descriptor: ResourceDescriptor): string {
@@ -340,11 +543,22 @@ export class TemplatesManager {
         const tm = TemplatesManager
 
         let properties: { name: string, type: string, desc: PropertyDescriptor }[] = []
+        let validator: string
         for (let name in synopsis.properties) {
+            validator = synopsis.properties[name].validator.method
+            if(validator) {
+                if (!validator.length)
+                    validator = undefined
+                else if (tm.validators.indexOf(validator) == -1)
+                    tm.validators.push(validator)
+            }
+            else
+                validator = undefined
+
             properties.push(
                 {
                     name: name,
-                    type: tm.getType(synopsis.properties[name].validator.method),
+                    type: tm.getType(validator),
                     desc: synopsis.properties[name]
                 }
             )
@@ -426,6 +640,9 @@ export class TemplatesManager {
             case "isBirthDate":
                 type = "Date"
                 break;
+            case undefined:
+                type = undefined
+                break
             default:
                 break;
         }

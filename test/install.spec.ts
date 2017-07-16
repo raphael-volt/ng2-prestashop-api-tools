@@ -8,17 +8,17 @@ import * as path from 'path';
 
 import { Http } from "../src/core/http";
 
-import { 
+import {
     ResourceDescriptor,
     ResourceSynopsis
- } from "../src/model/resource-descriptor";
+} from "../src/model/resource-descriptor";
 
-import { 
-    InstallController, 
-    LIB_DIRNAME, 
-    InstallEvent, 
-    InstallStatus, 
-    InstallProcess 
+import {
+    InstallController,
+    LIB_DIRNAME,
+    InstallEvent,
+    InstallStatus,
+    InstallProcess
 } from "../src/core/install-controller";
 
 import { TemplatesManager } from "../src/model/templates-manager";
@@ -30,8 +30,8 @@ let http: Http = Http.instance
 let errorFlag: boolean = false
 let rmdir = TestHelper.rmdirSync
 
-const CURRENT_DIR: string = path.join(path.resolve(__dirname, "..", "tests" ,"ps-api-output"))
-const LIB_DIR_PATH: string = path.join( CURRENT_DIR, LIB_DIRNAME )
+const CURRENT_DIR: string = path.join(path.resolve(__dirname, "..", "tests", "ps-api-output"))
+const LIB_DIR_PATH: string = path.join(CURRENT_DIR, LIB_DIRNAME)
 
 let ctrl: InstallController
 
@@ -47,6 +47,23 @@ const expectNot = (target: any, message?: string): Chai.Assertion => {
     return expect(target, message).not.to.be
 }
 
+describe('Enum and dict', () => {
+    it("should create an enum and a dictionnary", () => {
+        enum Errors {
+            NONE,
+            FOO,
+            BAR
+        }
+        let dict: { [code: number]: string } = {
+            [Errors.NONE]: "none",
+            [Errors.FOO]: "foo",
+            [Errors.BAR]: "bar",
+        }
+        expectBe(dict[Errors.NONE]).equals("none")
+        expectBe(dict[Errors.FOO]).equals("foo")
+        expectBe(dict[Errors.BAR]).equals("bar")
+    })
+})
 describe('InstallController', () => {
 
     before(() => {
@@ -54,7 +71,7 @@ describe('InstallController', () => {
             throw new Error("http must be connected ! Aborting!")
         ctrl = new InstallController()
         rmdir(LIB_DIR_PATH)
-        if(! ctrl.checkDirectory(CURRENT_DIR)) {
+        if (!ctrl.checkDirectory(CURRENT_DIR)) {
             throw new Error("Invalide output directory ! Aborting!")
         }
     })
@@ -74,9 +91,9 @@ describe('InstallController', () => {
                 done()
             }
         },
-        error => {
-            done(error)
-        })
+            error => {
+                done(error)
+            })
         ctrl.makeInstall(testData.resourceDescriptors)
         expect(fs.existsSync(LIB_DIR_PATH)).to.be.true
     })
@@ -95,6 +112,16 @@ describe('InstallController', () => {
         let sub: any = ctrl.notifier.subscribe((event: InstallEvent) => {
             expect(event.process).to.equal(InstallProcess.VO_SERVICES)
             if (event.process == InstallProcess.VO_SERVICES && event.status == InstallStatus.COMPLETE) {
+                sub.unsubscribe()
+                done()
+            }
+        })
+    })
+
+    it("should watch create validators", (done) => {
+        let sub: any = ctrl.notifier.subscribe((event: InstallEvent) => {
+            expect(event.process).to.equal(InstallProcess.VALIDATORS)
+            if (event.process == InstallProcess.VALIDATORS && event.status == InstallStatus.COMPLETE) {
                 sub.unsubscribe()
                 done()
             }
@@ -122,7 +149,7 @@ describe('InstallController', () => {
     })
 
     it("should create a simple descriptor", (done) => {
-        
+
         http.getSynopsis("addresses").subscribe((synopsis: ResourceSynopsis) => {
             fs.writeFileSync(
                 path.join(CURRENT_DIR, "test-descriptor.ts"),
@@ -140,7 +167,7 @@ describe('InstallController', () => {
     })
 
     it("should create a descriptor with associations", (done) => {
-        
+
         http.getSynopsis("products").subscribe((synopsis: ResourceSynopsis) => {
             fs.appendFileSync(
                 path.join(CURRENT_DIR, "test-descriptor.ts"),
@@ -158,8 +185,7 @@ describe('InstallController', () => {
     })
 
     it("should stop process", (done) => {
-        console.log("INSTALL TEST DONE")
-        setTimeout(()=>{
+        setTimeout(() => {
             done()
         }, 100)
     })
