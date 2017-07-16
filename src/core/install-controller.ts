@@ -12,7 +12,8 @@ import {
     SHARED_DIRNAME,
     RESOURCE_TYPES_FILENAME,
     RESOURCE_DESCRIPTOR_FILENAME,
-    RESOURCE_SERVICE_FILENAME
+    RESOURCE_SERVICE_FILENAME,
+    VALIDATORS_FILENAME
 } from "../model/templates-manager"
 import { ProgressBar } from "../utils/progress-bar";
 
@@ -26,7 +27,7 @@ export enum InstallProcess {
     VO,
     VO_DESCRIPTOR,
     VO_SERVICES,
-    FORM
+    VALIDATORS
 }
 
 export enum InstallStatus {
@@ -196,9 +197,27 @@ export class InstallController {
                 InstallStatus.COMPLETE,
                 this.numRessources
             )
-            // git clone !!!
+            this.notify(
+                InstallProcess.VALIDATORS,
+                InstallStatus.INIT,
+                0, 1
+            )
+            this.validators()
         }
     }
+
+    private validators() {
+        this.currentFileName = path.join(this.currentDir, LIBRARY_NAME, SHARED_DIRNAME, VALIDATORS_FILENAME + ".ts")
+        fs.writeFile(this.currentFileName, TemplatesManager.validatorsTemplate()).then(() => {
+            this.notify(
+                InstallProcess.VALIDATORS,
+                InstallStatus.COMPLETE,
+                1, 1
+            )
+            // git clone !!!
+        })
+    }
+
     private servicesInputs: { type: string, descriptor: string }[]
     private getResourceDescriptorsNames(): string[] {
         let l: string[] = []
@@ -237,12 +256,3 @@ export class InstallController {
 
     }
 }
-/*
-echo "# prestashop-api-core" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git remote add origin https://github.com/raphael-volt/prestashop-api-core.git
-git push -u origin master
-
-*/
