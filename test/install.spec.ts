@@ -3,14 +3,16 @@ import { TestHelper } from './test-helpers'
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 import * as mocha from 'mocha';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { Http } from "../src/core/http";
+
 import { 
     ResourceDescriptor,
     ResourceSynopsis
  } from "../src/model/resource-descriptor";
+
 import { 
     InstallController, 
     LIB_DIRNAME, 
@@ -18,6 +20,7 @@ import {
     InstallStatus, 
     InstallProcess 
 } from "../src/core/install-controller";
+
 import { TemplatesManager } from "../src/model/templates-manager";
 
 import { TestData } from "./test-data";
@@ -25,13 +28,24 @@ import { TestData } from "./test-data";
 let testData: TestData = TestData.instance
 let http: Http = Http.instance
 let errorFlag: boolean = false
-let rmdir = TestHelper.rmdir
+let rmdir = TestHelper.rmdirSync
 
-const CURRENT_DIR: string = path.join(path.dirname(path.dirname(__dirname)) ,"ps-api-output")
+const CURRENT_DIR: string = path.join(path.resolve(__dirname, "..", "tests" ,"ps-api-output"))
 const LIB_DIR_PATH: string = path.join( CURRENT_DIR, LIB_DIRNAME )
 
 let ctrl: InstallController
-let expect = chai.expect
+
+const expect = (target: any, message?: string): Chai.Assertion => {
+    return chai.expect(target, message)
+}
+
+const expectBe = (target: any, message?: string): Chai.Assertion => {
+    return expect(target, message).to.be
+}
+
+const expectNot = (target: any, message?: string): Chai.Assertion => {
+    return expect(target, message).not.to.be
+}
 
 describe('InstallController', () => {
 
