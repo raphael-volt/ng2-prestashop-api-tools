@@ -46,8 +46,7 @@
         "colors": "^1.1.2",
         "commander": "^2.10.0",
         "core-js": "^2.4.1",
-        "fs": "0.0.1-security",
-        "intercept-stdout": "^0.1.2",
+        "fs-extra": "^3.0.1",
         "mustache": "^2.3.0",
         "node": "0.0.0",
         "path": "^0.12.7",
@@ -55,7 +54,6 @@
         "rxjs": "^5.4.1",
         "ts-node": "^3.1.0",
         "typescript": "^2.4.1",
-        "xmlhttprequest": "^1.8.0",
-        "fs-extra": "^3.0.1"
+        "xmlhttprequest": "^1.8.0"
     }
 }
