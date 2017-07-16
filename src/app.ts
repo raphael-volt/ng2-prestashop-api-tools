@@ -3,7 +3,8 @@ import { JSONResponse } from "./core/http";
 import { APIConfig } from "./model/api-config";
 import { ConnectionfForm } from "./core/connection-form";
 import { ResourceDescriptorCollection } from "./model/resource-descriptor";
-
+import { readJsonSync } from "fs-extra";
+import { resolve } from "path";
 export class App {
 
     private commander: commander.CommanderStatic;
@@ -11,12 +12,12 @@ export class App {
     private resourceDescriptors: ResourceDescriptorCollection
     constructor() {
         this.commander = commander;
-        this.package = require('../../package.json');
+        this.package = readJsonSync(resolve(__dirname, "..", "package.json"))
     }
 
     public initialize() {
         this.commander
-            .version('0.0.1')
+            .version(this.package.version)
             .description('Manage your own prestashop-api module.')
             .option('-I, --install', 'Create the prestashop-api module.')
             .option('-U, --update', 'Update the prestashop-api module.')
@@ -78,7 +79,4 @@ export class App {
     }
 
 }
-
-let app = new App();
-app.initialize();
 
