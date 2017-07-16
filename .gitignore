@@ -58,6 +58,7 @@ typings/
 .env
 
 dist
+tests
 
 # eclipse
 .project
