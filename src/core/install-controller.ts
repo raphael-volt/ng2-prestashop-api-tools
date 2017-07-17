@@ -197,12 +197,14 @@ export class InstallController {
                 InstallStatus.COMPLETE,
                 this.numRessources
             )
-            this.notify(
-                InstallProcess.VALIDATORS,
-                InstallStatus.INIT,
-                0, 1
-            )
-            this.validators()
+            setTimeout(() => {
+                this.notify(
+                    InstallProcess.VALIDATORS,
+                    InstallStatus.INIT,
+                    0, 1
+                )
+                this.validators()
+            }, 100)
         }
     }
 
